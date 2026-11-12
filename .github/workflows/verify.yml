@@ -29,6 +29,8 @@ jobs:
           node --check server/index.js
       - name: Run unit tests
         run: npm test
+      - name: Install verified hand-landmark model for browser tests
+        run: npm run setup:model
       - name: Install Chromium for UI tests
         run: npx playwright install --with-deps chromium
       - name: Test desktop and mobile UI
