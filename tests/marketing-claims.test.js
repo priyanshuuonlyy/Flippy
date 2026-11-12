@@ -31,7 +31,7 @@ test('metadata and structured FAQ remain valid with truthful descriptions', () =
 });
 
 test('SEO cards reuse Flippy line icons instead of stock emoji badges', () => {
-  const cardHeadings = html.match(/<h4>.*?<\/h4>/g) || [];
+  const cardHeadings = html.match(/<div class="seo-card">\s*<h4>.*?<\/h4>/g) || [];
   assert.equal(cardHeadings.length, 4);
   for (const heading of cardHeadings) {
     assert.ok(heading.includes('<svg class="icon"'), heading);
