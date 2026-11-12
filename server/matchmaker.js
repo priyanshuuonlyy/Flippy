@@ -14,7 +14,9 @@ export class Bucket {
 export class Matchmaker {
   constructor(now = () => performance.now()) { this.now = now; this.clients = new Map(); this.queue = new Set(); }
   attach(id, send, gate = new CameraGate(), kind = 'person') {
-    if (this.clients.has(id)) return null;
+    if (this.clients.has(id)) {
+      this.detach(this.clients.get(id));
+    }
     gate.eligible = false; gate.goodSince = null; gate.lastHeartbeat = -Infinity; gate.lastFrames = null;
     const client = { id, send, gate, kind, room: null, partner: null, previous: null, avoidUntil: 0, queued: false,
       challenge: null, previousChallenge: null, lastChallenge: -Infinity, lastSeq: -1,

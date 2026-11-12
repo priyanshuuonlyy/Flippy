@@ -45,17 +45,34 @@ export function createRgcServer({ origin = 'http://localhost:3000', iceServers =
   const addresses = new Map();
   const matchmaker = new Matchmaker(now);
   function sessionFrom(request) {
-    const secure = checkSecure(request);
-    const cookieName = secure ? '__Host-rgc' : 'rgc';
-    const value = request.headers.cookie?.split(';').map(item => item.trim()).find(item => item.startsWith(`${cookieName}=`))?.slice(cookieName.length + 1);
-    const session = sessions.get(value);
+    let value = null;
+    if (request.headers.cookie) {
+      const secure = checkSecure(request);
+      const cookieName = secure ? '__Host-rgc' : 'rgc';
+      const cookies = request.headers.cookie.split(';').map(item => item.trim());
+      value = cookies.find(item => item.startsWith(`${cookieName}=`))?.slice(cookieName.length + 1)
+        || cookies.find(item => item.startsWith('rgc='))?.slice(4)
+        || cookies.find(item => item.startsWith('__Host-rgc='))?.slice(11);
+    }
+    if (!value && request.url) {
+      try {
+        const parsed = new URL(request.url, 'http://localhost');
+        value = parsed.searchParams.get('token') || parsed.searchParams.get('session');
+      } catch {}
+    }
+    const session = value ? sessions.get(value) : null;
     return session && now() - session.seen < 600000 ? session : null;
   }
+  function getClientIp(request) {
+    const forwarded = request.headers['x-forwarded-for'];
+    if (forwarded) return forwarded.split(',')[0].trim();
+    return request.headers['x-real-ip'] || request.socket.remoteAddress || '127.0.0.1';
+  }
   function addressBucket(request) {
-    const address = request.socket.remoteAddress;
+    const address = getClientIp(request);
     if (!addresses.has(address)) {
       if (addresses.size >= 10000) return null;
-      addresses.set(address, { bucket: new Bucket(30, 2000, now()), seen: now() });
+      addresses.set(address, { bucket: new Bucket(120, 1000, now()), seen: now() });
     }
     const entry = addresses.get(address); entry.seen = now(); return entry.bucket;
   }
@@ -81,12 +98,20 @@ export function createRgcServer({ origin = 'http://localhost:3000', iceServers =
           if (sessions.size >= 5000) { response.writeHead(503); response.end(); return; }
           const id = randomBytes(32).toString('hex');
           session = { id, seen: now(), gate: new CameraGate(), active: false, kind: botToken && request.headers['x-flippy-bot-token'] === botToken ? 'bot' : 'person' }; sessions.set(id, session);
+        } else {
+          if (session.connection) {
+            try { session.connection.close(1001, 'Reconnected'); } catch {
+              try { session.connection.terminate(); } catch {}
+            }
+            session.connection = null;
+          }
+          session.active = false;
         }
         session.seen = now();
         const secure = checkSecure(request);
         const cookieName = secure ? '__Host-rgc' : 'rgc';
         response.setHeader('Set-Cookie', `${cookieName}=${session.id}; HttpOnly; SameSite=Strict; Path=/${secure ? '; Secure' : ''}`);
-        response.setHeader('Content-Type', 'application/json'); response.end(JSON.stringify({ iceServers, testing: !!testing })); return;
+        response.setHeader('Content-Type', 'application/json'); response.end(JSON.stringify({ id: session.id, iceServers, testing: !!testing })); return;
       }
       let base = path.join(root, 'public');
       let relative = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname);
@@ -102,13 +127,38 @@ export function createRgcServer({ origin = 'http://localhost:3000', iceServers =
   const sockets = new WebSocketServer({ noServer: true, maxPayload: 65536, perMessageDeflate: false });
   server.on('upgrade', (request, socket, head) => {
     const session = sessionFrom(request);
-    if (request.url !== '/signal' || !request.headers.origin || !checkOrigin(request.headers.origin, request) || !session || session.active || !addressBucket(request)?.take(now())) {
+    const reqPath = request.url?.split('?')[0];
+    const originHeader = request.headers.origin;
+    if (reqPath !== '/signal' || (originHeader && !checkOrigin(originHeader, request)) || !session || !addressBucket(request)?.take(now())) {
       socket.write('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n'); socket.destroy(); return;
+    }
+    if (session.active) {
+      if (session.connection && session.connection.readyState === WebSocket.OPEN) {
+        try {
+          const url = new URL(request.url, 'http://localhost');
+          if (url.searchParams.get('token') || url.searchParams.get('session')) {
+            try { session.connection.close(1001, 'Reconnected'); } catch {
+              try { session.connection.terminate(); } catch {}
+            }
+            session.connection = null;
+            session.active = false;
+          } else {
+            socket.write('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n'); socket.destroy(); return;
+          }
+        } catch {
+          socket.write('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n'); socket.destroy(); return;
+        }
+      } else {
+        session.active = false;
+        session.connection = null;
+      }
     }
     session.active = true;
     sockets.handleUpgrade(request, socket, head, connection => {
+      session.connection = connection;
       let failures = 0;
       let alive = true;
+      let missedPings = 0;
       const client = matchmaker.attach(session.id, message => {
         if (connection.readyState !== WebSocket.OPEN) return;
         if (connection.bufferedAmount > 262144) { connection.close(1008, 'Backpressure'); return; }
@@ -123,10 +173,30 @@ export function createRgcServer({ origin = 'http://localhost:3000', iceServers =
           if (++failures >= 3) connection.close(1008, 'Invalid messages');
         }
       });
-      connection.on('pong', () => { alive = true; });
+      connection.on('pong', () => { alive = true; missedPings = 0; });
       connection.on('error', () => {});
-      const ping = setInterval(() => { if (!alive) connection.terminate(); else { alive = false; connection.ping(); } }, 10000);
-      connection.on('close', () => { clearInterval(ping); session.active = false; session.seen = now(); matchmaker.detach(client); });
+      const ping = setInterval(() => {
+        if (!alive) {
+          if (++missedPings >= 3) {
+            clearInterval(ping);
+            connection.terminate();
+            return;
+          }
+        } else {
+          missedPings = 0;
+        }
+        alive = false;
+        try { connection.ping(); } catch {}
+      }, 15000);
+      connection.on('close', () => {
+        clearInterval(ping);
+        if (session.connection === connection) {
+          session.active = false;
+          session.connection = null;
+        }
+        session.seen = now();
+        if (client) matchmaker.detach(client);
+      });
     });
   });
   const timer = setInterval(() => {

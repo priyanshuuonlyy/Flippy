@@ -81,6 +81,7 @@ let workerBusy = false;
 let lastDetection = 0;
 let gestureEpoch = 0;
 let disposed = false;
+let currentSessionId = null;
 const signalingScope = new AsyncScope();
 const labels = { idle: 'Ready when you are', preview: 'Camera preview · not connected', searching: 'Finding someone new…', connecting: 'Connecting your conversation…', chatting: 'You’re connected', paused: 'Matching paused', reconnecting: 'Reconnecting…' };
 const transitions = {
@@ -553,20 +554,34 @@ async function connect() {
   clearTimeout(reconnectTimer);
   try {
     const controller = new AbortController();
-    const requestTimer = setTimeout(() => controller.abort(), 10000);
+    const requestTimer = setTimeout(() => controller.abort(), 15000);
     let response;
-    try { response = await fetch('/api/session', { signal: controller.signal }); }
+    try {
+      const sessionUrl = currentSessionId ? `/api/session?session=${encodeURIComponent(currentSessionId)}` : '/api/session';
+      response = await fetch(sessionUrl, { signal: controller.signal });
+    }
     finally { clearTimeout(requestTimer); }
     if (!response.ok) throw new Error('Signaling unavailable');
     const configuration = await response.json();
+    if (configuration.id) currentSessionId = configuration.id;
     iceServers = configuration.iceServers; labEnabled = configuration.testing === true;
     if (elements.labLink) elements.labLink.hidden = !labEnabled;
     if (elements.labTools) elements.labTools.hidden = !labEnabled;
     if (disposed) return;
-    const connection = new WebSocket(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/signal`);
+    const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const tokenQuery = currentSessionId ? `?token=${encodeURIComponent(currentSessionId)}` : '';
+    const connection = new WebSocket(`${wsProto}//${location.host}/signal${tokenQuery}`);
     socket = connection;
-    const openingTimer = setTimeout(() => { if (connection.readyState === WebSocket.CONNECTING) connection.close(); }, 10000);
-    connection.onopen = () => { clearTimeout(openingTimer); reconnectAttempt = 0; sequence = 0; setState(stream ? 'preview' : 'idle'); };
+    const openingTimer = setTimeout(() => { if (connection.readyState === WebSocket.CONNECTING) connection.close(); }, 15000);
+    connection.onopen = () => {
+      clearTimeout(openingTimer);
+      reconnectAttempt = 0;
+      sequence = 0;
+      setState(stream ? 'preview' : 'idle');
+      if (stream) {
+        notice('Connected. Checking your camera…');
+      }
+    };
     connection.onmessage = ({ data }) => {
       if (socket !== connection) return;
       let message;
@@ -617,7 +632,7 @@ async function connect() {
 }
 function scheduleReconnect() {
   clearTimeout(reconnectTimer);
-  reconnectTimer = setTimeout(connect, Math.min(15000, 700 * 2 ** Math.min(reconnectAttempt++, 5)) + Math.random() * 300);
+  reconnectTimer = setTimeout(connect, Math.min(10000, 600 * 2 ** Math.min(reconnectAttempt++, 4)) + Math.random() * 250);
 }
 function startWorker() {
   if (worker || !elements.gesturesEnabled.checked) return;
