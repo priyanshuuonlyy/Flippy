@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - flippy/full-frame-premium-controls-20261112
+      - 'flippy/**'
 
 permissions:
   contents: read
