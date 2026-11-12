@@ -17,7 +17,6 @@
     "lab": "node scripts/lab.js",
     "share": "node scripts/share-cloudflare.js",
     "build": "node scripts/setup-model.js",
-    "postinstall": "node scripts/setup-model.js",
     "setup:model": "node scripts/setup-model.js"
   },
   "dependencies": {
