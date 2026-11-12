@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: rgc-random-gesture-chats
+    name: flippylive
     env: node
     plan: free
     region: oregon
