@@ -1,0 +1,19 @@
+{
+  "name": "Flippy · Free Random Video Chat",
+  "short_name": "Flippy",
+  "description": "Safe, free random video chat with verified real people and touchless hand gesture controls.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1d2b32",
+  "theme_color": "#e8edef",
+  "categories": ["social", "communication", "entertainment"],
+  "icons": [
+    {
+      "src": "/assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

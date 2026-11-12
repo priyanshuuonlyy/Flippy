@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="flippyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#304f59"/>
+      <stop offset="100%" stop-color="#1d2b32"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#flippyGrad)"/>
+  <g transform="translate(106, 106)" fill="none" stroke="#eef4f5" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M250 144a100 100 0 0 1-100 100H62l-38 25v-125a112 112 0 0 1 226 0Z"/>
+    <circle cx="88" cy="138" r="8" fill="#eef4f5"/>
+    <circle cx="138" cy="138" r="8" fill="#eef4f5"/>
+    <circle cx="188" cy="138" r="8" fill="#eef4f5"/>
+  </g>
+</svg>
