@@ -57,3 +57,44 @@ test('t() returns translated string for active language and falls back to Englis
   // Fallback test
   assert.equal(t('nonExistentKey', 'FallbackValue'), 'FallbackValue');
 });
+
+test('every language dictionary is complete, distinct, and verified native', () => {
+  const enKeys = Object.keys(TRANSLATIONS.en).sort();
+  assert.equal(enKeys.length >= 170, true);
+
+  for (const [code, dict] of Object.entries(TRANSLATIONS)) {
+    const keys = Object.keys(dict).sort();
+    assert.deepEqual(keys, enKeys, `Language ${code} must have the exact same keys as English`);
+  }
+
+  // Verify English is pure English
+  assert.equal(TRANSLATIONS.en.onboardStep1Title, 'Choose your language');
+  assert.equal(TRANSLATIONS.en.btnBlock, 'Block');
+  assert.equal(TRANSLATIONS.en.appearanceNatural, 'Natural · Original camera');
+  assert.equal(TRANSLATIONS.en.compareH2, 'Flippy vs OmeTV vs Omegle — The Modern Alternative');
+
+  // Verify German is pure German
+  assert.equal(TRANSLATIONS.de.onboardStep1Title, 'Wähle deine Sprache');
+  assert.equal(TRANSLATIONS.de.btnBlock, 'Blockieren');
+  assert.equal(TRANSLATIONS.de.compareH2, 'Flippy vs OmeTV vs Omegle — Die Moderne Alternative');
+
+  // Verify Spanish is pure Spanish
+  assert.equal(TRANSLATIONS.es.onboardStep1Title, 'Elige tu idioma');
+  assert.equal(TRANSLATIONS.es.btnBlock, 'Bloquear');
+  assert.equal(TRANSLATIONS.es.compareH2, 'Flippy vs OmeTV vs Omegle — La Alternativa Moderna');
+
+  // Verify Portuguese is pure Portuguese
+  assert.equal(TRANSLATIONS.pt.onboardStep1Title, 'Escolha seu idioma');
+  assert.equal(TRANSLATIONS.pt.btnBlock, 'Bloquear');
+  assert.equal(TRANSLATIONS.pt.compareH2, 'Flippy vs OmeTV vs Omegle — A Alternativa Moderna');
+
+  // Verify French is pure French
+  assert.equal(TRANSLATIONS.fr.onboardStep1Title, 'Choisissez votre langue');
+  assert.equal(TRANSLATIONS.fr.btnBlock, 'Bloquer');
+  assert.equal(TRANSLATIONS.fr.compareH2, 'Flippy vs OmeTV vs Omegle — L’Alternative Moderne');
+
+  // Verify Turkish is pure Turkish
+  assert.equal(TRANSLATIONS.tr.onboardStep1Title, 'Dilinizi seçin');
+  assert.equal(TRANSLATIONS.tr.btnBlock, 'Engelle');
+  assert.equal(TRANSLATIONS.tr.compareH2, 'Flippy vs OmeTV vs Omegle — Modern Alternatif');
+});
