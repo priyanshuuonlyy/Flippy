@@ -1,0 +1,43 @@
+name: Flippy source checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - flippy/full-frame-premium-controls-20261112
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies (without build side effects)
+        run: npm ci --ignore-scripts
+      - name: Syntax validation
+        run: |
+          node --check public/reactions.js
+          node --check public/app.js
+          node --check server/index.js
+      - name: Run unit tests
+        run: npm test
+      - name: Install verified hand-landmark model for browser tests
+        run: npm run setup:model
+      - name: Install Chromium for UI tests
+        run: npx playwright install --with-deps chromium
+      - name: Test desktop and mobile UI
+        env:
+          BROWSER_CHANNEL: chromium
+        run: node --test tests/appearance.e2e.js tests/visual-consistency.e2e.js
+      - name: Test two-person WebRTC and heart reactions
+        env:
+          BROWSER_CHANNEL: chromium
+        run: node --test tests/browser.e2e.js
