@@ -22,7 +22,19 @@ test('native reaction controls fit existing Flippy viewport and media layout', {
       assert.equal(await page.locator('#localVideo').evaluate(v => getComputedStyle(v).objectFit), 'contain');
       assert.equal(await page.locator('#reactionTray').getAttribute('aria-label'), 'Reactions');
       assert.equal(await page.locator('.reaction-emoji-btn').count(), 5);
-      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'horizontal overflow at ' + width);
+      const overflow = await page.evaluate(() => {
+        const viewport = innerWidth;
+        return { viewport, scrollWidth: document.documentElement.scrollWidth,
+          offenders: [...document.querySelectorAll('body *')].map(element => {
+            const box = element.getBoundingClientRect();
+            return { tag: element.tagName.toLowerCase(), id: element.id || null,
+              className: typeof element.className === 'string' ? element.className.slice(0, 80) : '',
+              left: Math.round(box.left), right: Math.round(box.right),
+              width: Math.round(box.width), scrollWidth: element.scrollWidth, clientWidth: element.clientWidth };
+          }).filter(x => x.right > viewport + 1 || x.left < -1).slice(0, 18) };
+      });
+      if (overflow.scrollWidth > width) console.log('Flippy viewport overflow diagnostic:', JSON.stringify(overflow));
+      assert.equal(overflow.scrollWidth <= width, true, 'horizontal overflow at ' + width);
       const tray = await page.locator('#reactionTray').boundingBox();
       assert.ok(tray && tray.x >= -1 && tray.x + tray.width <= width + 1, 'reaction tray clipped at ' + width);
       for (const button of await page.locator('.reaction-emoji-btn').all()) {
