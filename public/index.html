@@ -21,19 +21,28 @@
 <link rel="icon" type="image/svg+xml" href="/assets/icon.svg">
 <link rel="manifest" href="/manifest.json">
 
-<!-- Open Graph / Facebook / WhatsApp -->
+<!-- Open Graph / Facebook / WhatsApp / Meta -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://flippy-b2yr.onrender.com/">
-<meta property="og:title" content="Flippy · Free Random Video Chat with Hand Gestures">
-<meta property="og:description" content="Flippy offers free random video chat with hand gesture controls, video activity checks and community expectations. Moderation improvements are in development.">
+<meta property="og:title" content="Flippy · Free Random Video Chat (Touchless Hand Gestures)">
+<meta property="og:description" content="Meet new people instantly with touchless hand gestures (✂️ snip to skip, 🫶 heart for love). 100% free, no login or coins required.">
 <meta property="og:image" content="https://flippy-b2yr.onrender.com/assets/mountain-landscape.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:alt" content="Flippy Free Random Video Chat with Camera Hand Gestures">
 <meta property="og:site_name" content="Flippy">
 <meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta property="og:locale:alternate" content="tr_TR">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:locale:alternate" content="de_DE">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Flippy · Free Random Video Chat with Hand Gestures">
-<meta name="twitter:description" content="Free random video chat with camera-based hand gestures and a lightweight, responsive interface.">
+<meta name="twitter:description" content="Touchless hand gestures to skip and react. Free browser-based random video chat without signups or paywalls.">
 <meta name="twitter:image" content="https://flippy-b2yr.onrender.com/assets/mountain-landscape.jpg">
 
 <!-- Structured Data (JSON-LD) -->
@@ -112,6 +121,22 @@
             "@type": "Answer",
             "text": "Flippy uses your webcam to track hands locally: hold two fingers together and swipe sideways (or snip fingers twice like scissors ✂️) to skip to the next person. Bring both hands together in a heart shape to send floating heart balloons."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "How does Flippy compare to OmeTV and Omegle?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Unlike OmeTV which requires linking a personal Facebook, VK, or Apple account, Flippy requires no sign-up or personal data. Flippy also introduces touchless camera hand gestures to skip and react, and does not charge paid unban fees."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Flippy a free Omegle alternative without coins or subscriptions?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. While many modern random chat platforms place conversations behind coin systems or paid monthly tiers, Flippy is completely free with no subscriptions or paywalls."
+          }
         }
       ]
     }
@@ -129,7 +154,7 @@
 <div class="app-shell">
 <aside class="sidebar glass">
 <a class="brand" href="/" aria-label="Flippy home"><span class="brand-symbol"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-8 8H5l-3 2v-10a9 9 0 0 1 18 0Z"/><path d="M7 11h.01M11 11h.01M15 11h.01"/></svg></span>flippy<span class="brand-dot">.</span></a>
-<nav aria-label="Main navigation"><a href="#chatGrid" aria-label="Conversation" class="nav-active" aria-current="location"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="4"/><path d="m16 10 5-3v10l-5-3"/></svg><span data-i18n="navConversation">Conversation</span></a><a href="#guide" aria-label="Gesture guide"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V5a2 2 0 0 1 4 0v7-8a2 2 0 0 1 4 0v8l1-2a2 2 0 0 1 3 2l-2 6a5 5 0 0 1-5 4h-1a6 6 0 0 1-5-3l-4-6a2 2 0 0 1 3-2l2 3"/></svg><span data-i18n="navGestures">Gestures</span></a><a href="#about" aria-label="About Flippy"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span data-i18n="navAbout">About</span></a><a href="#safety" aria-label="Community Safety"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span data-i18n="navSafety">Safety</span></a><a href="#faq" aria-label="FAQ"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg><span data-i18n="navFaq">FAQ</span></a><a href="#accessibilityPanel" aria-label="Settings" id="settingsLink"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></svg><span data-i18n="navSettings">Settings</span></a><a id="labLink" href="/lab.html" aria-label="Test Lab" hidden><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="4"/><rect x="13" y="12" width="6" height="6" rx="1.5"/></svg><span>Test Lab</span></a></nav>
+<nav aria-label="Main navigation"><a href="#chatGrid" aria-label="Conversation" class="nav-active" aria-current="location"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="4"/><path d="m16 10 5-3v10l-5-3"/></svg><span data-i18n="navConversation">Conversation</span></a><a href="#guide" aria-label="Gesture guide"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V5a2 2 0 0 1 4 0v7-8a2 2 0 0 1 4 0v8l1-2a2 2 0 0 1 3 2l-2 6a5 5 0 0 1-5 4h-1a6 6 0 0 1-5-3l-4-6a2 2 0 0 1 3-2l2 3"/></svg><span data-i18n="navGestures">Gestures</span></a><a href="#about" aria-label="About Flippy"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span data-i18n="navAbout">About</span></a><a href="#safety" aria-label="Community Safety"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span data-i18n="navSafety">Safety</span></a><a href="#faq" aria-label="FAQ"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg><span data-i18n="navFaq">FAQ</span></a><a href="#compare" aria-label="Compare platforms"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></svg><span data-i18n="navCompare">Compare</span></a><a href="#accessibilityPanel" aria-label="Settings" id="settingsLink"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></svg><span data-i18n="navSettings">Settings</span></a><a id="labLink" href="/lab.html" aria-label="Test Lab" hidden><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="4"/><rect x="13" y="12" width="6" height="6" rx="1.5"/></svg><span>Test Lab</span></a></nav>
 <span class="privacy-note"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><span data-i18n="privacyNote">No server recording</span></span>
 </aside>
 <main>
@@ -215,6 +240,71 @@
 </div>
 </section>
 
+<section id="compare" class="seo-section glass" aria-label="Flippy vs OmeTV vs Omegle Comparison">
+<h2 data-i18n="compareH2">Flippy vs OmeTV vs Omegle — The Modern Alternative</h2>
+<p data-i18n="compareIntro">Looking for a real alternative to OmeTV or Omegle? Legacy video chat platforms often require compulsory social media logins, charge expensive unban fees, or trap users behind coin paywalls. Flippy delivers a clean, modern random video chat with touchless hand gestures, zero sign-up friction, and encrypted peer-to-peer conversations.</p>
+
+<div class="compare-container">
+<table class="compare-table">
+<thead>
+<tr>
+<th data-i18n="compColFeature">Feature</th>
+<th data-i18n="compColFlippy">Flippy</th>
+<th data-i18n="compColOmeTV">OmeTV</th>
+<th data-i18n="compColOmegle">Legacy Omegle / CooMeet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-i18n="compRowPrice">Pricing &amp; Coins</td>
+<td><span class="compare-pill good" data-i18n="compFlippyPrice">100% Free Forever</span></td>
+<td><span class="compare-pill bad" data-i18n="compOmeTVPrice">Paid Unban Subscriptions</span></td>
+<td><span class="compare-pill bad" data-i18n="compOmeglePrice">$20–$40/mo Coin Paywalls</span></td>
+</tr>
+<tr>
+<td data-i18n="compRowLogin">Account &amp; Privacy</td>
+<td><span class="compare-pill good" data-i18n="compFlippyLogin">No Login Required (Instant)</span></td>
+<td><span class="compare-pill bad" data-i18n="compOmeTVLogin">Mandatory (VK, FB, Apple)</span></td>
+<td><span class="compare-pill bad" data-i18n="compOmegleLogin">Phone or Email Required</span></td>
+</tr>
+<tr>
+<td data-i18n="compRowGestures">Touchless Gestures</td>
+<td><span class="compare-pill good" data-i18n="compFlippyGestures">✂️ Snip &amp; Swipe to Skip</span></td>
+<td><span class="compare-pill bad" data-i18n="compOmeTVGestures">None (Buttons only)</span></td>
+<td><span class="compare-pill bad" data-i18n="compOmegleGestures">None (Keyboard / mouse)</span></td>
+</tr>
+<tr>
+<td data-i18n="compRowFeed">Feed Quality</td>
+<td><span class="compare-pill good" data-i18n="compFlippyFeed">CameraGate Activity Checks</span></td>
+<td><span class="compare-pill bad" data-i18n="compOmeTVFeed">Black-box Automatic Bans</span></td>
+<td><span class="compare-pill bad" data-i18n="compOmegleFeed">Unfiltered Black Screens</span></td>
+</tr>
+<tr>
+<td data-i18n="compRowEncryption">Connection Type</td>
+<td><span class="compare-pill good" data-i18n="compFlippyEnc">Peer-to-Peer Encrypted</span></td>
+<td><span class="compare-pill bad" data-i18n="compOmeTVEnc">Tracked Social Profiles</span></td>
+<td><span class="compare-pill bad" data-i18n="compOmegleEnc">Logged IP Addresses</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="compare-grid">
+<div class="compare-highlight-card">
+<h4 data-i18n="compCard1Title"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> No Social Media Required</h4>
+<p data-i18n="compCard1Desc">Never link your personal Facebook, VK, or Apple ID just to chat. Flippy lets you connect anonymously in one tap with zero registration.</p>
+</div>
+<div class="compare-highlight-card">
+<h4 data-i18n="compCard2Title"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V5a2 2 0 0 1 4 0v7-8a2 2 0 0 1 4 0v8l1-2a2 2 0 0 1 3 2l-2 6a5 5 0 0 1-5 4h-1a6 6 0 0 1-5-3l-4-6a2 2 0 0 1 3-2l2 3"/></svg> Hands-Free Navigation</h4>
+<p data-i18n="compCard2Desc">Sit back and relax. Natural hand gestures let you skip without reaching for your phone or keyboard: snip twice (✂️) or flick two fingers sideways.</p>
+</div>
+<div class="compare-highlight-card">
+<h4 data-i18n="compCard3Title"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg> No Unban Traps</h4>
+<p data-i18n="compCard3Desc">OmeTV users frequently complain about accidental bans and paid unban subscriptions. Flippy uses transparent camera checks so you know exactly why feeds pause.</p>
+</div>
+</div>
+</section>
+
 <footer>
 <div class="footer-left">
 <span class="footer-title" data-i18n="footerTitle">Flippy · Random Gesture Chats</span>
@@ -222,6 +312,7 @@
 </div>
 <div class="footer-links">
 <a href="#about" data-i18n="navAbout">About</a>
+<a href="#compare" data-i18n="navCompare">Compare</a>
 <a href="#safety" data-i18n="navSafety">Community Safety</a>
 <a href="#faq" data-i18n="navFaq">FAQ</a>
 <a href="#guide" data-i18n="navGestures">Gesture Guide</a>

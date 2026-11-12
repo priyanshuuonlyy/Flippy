@@ -23,7 +23,9 @@ test('all supported languages have required key translations', () => {
     'langSelectLabel',
     'aboutH2',
     'safetyH2',
-    'faqH2'
+    'faqH2',
+    'navCompare',
+    'compareH2'
   ];
 
   for (const [code, dict] of Object.entries(TRANSLATIONS)) {
