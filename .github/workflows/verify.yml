@@ -34,7 +34,7 @@ jobs:
       - name: Test desktop and mobile UI
         env:
           BROWSER_CHANNEL: chromium
-        run: node --test tests/appearance.e2e.js
+        run: node --test tests/appearance.e2e.js tests/visual-consistency.e2e.js
       - name: Test two-person WebRTC and heart reactions
         env:
           BROWSER_CHANNEL: chromium
