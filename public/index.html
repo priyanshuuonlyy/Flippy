@@ -161,10 +161,10 @@
 <header class="call-header"><div><p class="eyebrow" data-i18n="eyebrow">A LITTLE CONNECTION</p><h1 data-i18n="headerTitle">Meet someone new.</h1></div><div class="header-actions"><button id="helpButton" class="icon-button" aria-expanded="false" aria-controls="guide" aria-label="Gesture guide"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V5a2 2 0 0 1 4 0v7-8a2 2 0 0 1 4 0v8l1-2a2 2 0 0 1 3 2l-2 6a5 5 0 0 1-5 4h-1a6 6 0 0 1-5-3l-4-6a2 2 0 0 1 3-2l2 3"/></svg></button><button id="settingsToggle" class="icon-button" aria-expanded="false" aria-controls="accessibilityPanel" aria-label="Settings"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></svg></button><button id="stopButton" class="leave-button" disabled data-i18n="leaveBtn">Leave</button></div></header>
 <section class="chat-grid" id="chatGrid" aria-label="Video conversation">
 <div class="video-card remote-card" id="remoteCard"><video id="remoteVideo" autoplay playsinline></video>
-<div class="video-top"><span class="video-tag"><span class="live-dot"></span><span id="partnerLabel" data-i18n="partnerNext">YOUR NEXT CONNECTION</span></span><span id="partnerType" class="room-badge" data-i18n="roomBadge">FLIPPY LIVE</span></div>
+<div class="video-top"><span class="video-tag"><span class="live-dot"></span><span id="partnerLabel" data-i18n="partnerNext">YOUR NEXT CONNECTION</span></span><div class="remote-top-actions"><span id="partnerType" class="room-badge" data-i18n="roomBadge">FLIPPY LIVE</span><button id="blockButton" class="block-action-btn" aria-label="Block and skip" title="Block this person and skip immediately" hidden><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg><span data-i18n="btnBlock">Block</span></button></div></div>
 <div class="empty-state" id="emptyState"><div class="empty-content glass"><div class="orbit"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="4"/><path d="m16 10 5-3v10l-5-3"/></svg></div><p class="stage-eyebrow" data-i18n="stageEyebrow">YOUR SPACE TO CONNECT</p><h2 id="emptyTitle" data-i18n="emptyTitle">Ready when you are.</h2><p id="emptyText" data-i18n="emptyText" data-i18n-html="true">Turn on your camera and microphone.<br>A new conversation starts with you.</p><span class="small-pill"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg> <span data-i18n="chooseToConnect">You choose when to connect</span></span></div></div>
 <div class="video-bottom"><span id="connectionStatus" role="status" data-i18n="readyStatus">Ready when you are</span><span class="stage-hint"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V5a2 2 0 0 1 4 0v7-8a2 2 0 0 1 4 0v8l1-2a2 2 0 0 1 3 2l-2 6a5 5 0 0 1-5 4h-1a6 6 0 0 1-5-3l-4-6a2 2 0 0 1 3-2l2 3"/></svg> <span data-i18n="handsFreeHint">Hands free, naturally</span></span></div></div>
-<div class="video-card local-card" id="localCard"><video id="localVideo" autoplay playsinline muted></video><div class="video-top"><span class="video-tag">YOU</span><div class="local-actions"><button id="switchCameraBtn" class="camera-action" aria-label="Switch camera" hidden><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10a9 9 0 0 1 15-5l3 3M21 3v5h-5M21 14A9 9 0 0 1 6 19l-3-3M3 21v-5h5"/></svg></button><button id="pipToggle" class="camera-action" aria-label="Switch video layout" aria-pressed="false"><span id="pipIcon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="4"/><rect x="13" y="12" width="6" height="6" rx="1.5"/></svg></span></button></div></div><div id="localEmpty" class="local-empty"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="4"/><path d="m16 10 5-3v10l-5-3"/></svg><p data-i18n="previewTag">Your preview</p></div><span id="cameraBadge" class="camera-badge" data-i18n="badgeCameraOff">CAMERA OFF</span></div>
+<div class="video-card local-card" id="localCard"><video id="localVideo" autoplay playsinline muted></video><div class="video-top"><span class="video-tag">YOU</span><div class="local-actions"><button id="switchCameraBtn" class="camera-action" aria-label="Switch camera" hidden><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10a9 9 0 0 1 15-5l3 3M21 3v5h-5M21 14A9 9 0 0 1 6 19l-3-3M3 21v-5h5"/></svg></button><button id="appearanceToggleBtn" class="camera-action" aria-label="Appearance preset" title="Change camera look (Natural / Soft Light / Radiance)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z"/><path d="M5 3v4M3 5h4M19 17v4M17 19h4"/></svg></button><button id="pipToggle" class="camera-action" aria-label="Switch video layout" aria-pressed="false"><span id="pipIcon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="4"/><rect x="13" y="12" width="6" height="6" rx="1.5"/></svg></span></button></div></div><div id="localEmpty" class="local-empty"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="4"/><path d="m16 10 5-3v10l-5-3"/></svg><p data-i18n="previewTag">Your preview</p></div><span id="cameraBadge" class="camera-badge" data-i18n="badgeCameraOff">CAMERA OFF</span></div>
 <canvas id="gestureFeedback" aria-hidden="true"></canvas><canvas id="hearts" aria-hidden="true"></canvas></section>
 <div class="control-area glass">
 <div class="gesture-status"><span class="status-spark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V5a2 2 0 0 1 4 0v7-8a2 2 0 0 1 4 0v8l1-2a2 2 0 0 1 3 2l-2 6a5 5 0 0 1-5 4h-1a6 6 0 0 1-5-3l-4-6a2 2 0 0 1 3-2l2 3"/></svg></span><span id="gestureStatus" data-i18n="gesturesWaiting">Gestures waiting for camera</span><span id="micBadge" class="gesture-status-note" role="status" data-i18n="micOff">Mic off</span></div>
@@ -172,7 +172,7 @@
 <div id="notice" class="notice" role="status" aria-live="polite" data-i18n="noticeAllowMedia">Allow camera and microphone access, then start when you’re ready.</div>
 </div>
 <section id="guide" class="gesture-guide" aria-label="Gesture guide"><article class="glass"><span class="guide-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h14m-4-4 4 4-4 4M20 16H6m4-4-4 4 4 4"/></svg></span><div><h3 data-i18n="guideTitle1">A swipe or snip. A new hello.</h3><p data-i18n="guideDesc1">Hold index + middle fingers together and flick sideways, or snip twice (✂️) in place to skip.</p></div><span class="guide-number">01</span></article><article class="glass"><span class="guide-icon rose"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.8a5.5 5.5 0 0 0-7.8 0L12 5.9l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.4a5.5 5.5 0 0 0 0-7.8Z"/></svg></span><div><h3 data-i18n="guideTitle2">A heart, from both hands.</h3><p data-i18n="guideDesc2">Join your fingertips and thumbs. Hold to send a little love.</p></div><span class="guide-number">02</span></article></section>
-<details id="accessibilityPanel" class="accessibility glass"><summary data-i18n="settingsSummary">Camera, sound &amp; accessibility</summary><div class="settings-grid"><label><span data-i18n="langSelectLabel">Language / Idioma</span><select id="langSelect"><option value="en">🇺🇸 English</option><option value="es">🇪🇸 Español</option><option value="pt">🇧🇷 Português</option><option value="tr">🇹🇷 Türkçe</option><option value="fr">🇫🇷 Français</option><option value="de">🇩🇪 Deutsch</option></select></label><label><span data-i18n="cameraSelectLabel">Camera</span><select id="cameraSelect"><option value="" data-i18n="defaultCamera">Default camera</option></select></label><label><input id="lowLight" type="checkbox"> <span data-i18n="dimRoomLabel">I’m in a dim room</span></label><label><input id="gesturesEnabled" type="checkbox" checked> <span data-i18n="gesturesEnabledLabel">Hand gestures enabled</span></label><label><input id="reduceMotion" type="checkbox"> <span data-i18n="reduceMotionLabel">Reduce reaction motion</span></label><button id="retryButton" class="secondary" data-i18n="restartCameraBtn">Restart camera &amp; mic</button><p data-i18n="cameraRequirementText">Buttons work without gestures. A black or unusable camera pauses matching after two minutes. Improve lighting or restart your camera, then resume.</p><div class="advanced-section"><h4 data-i18n="advancedHeading">⚡ Advanced Features · Gesture Customization</h4><div class="settings-grid"><label><input id="enableScissorGesture" type="checkbox" checked> <span data-i18n="scissorLabel">Scissor Snip (✂️ open/close fingers twice to skip)</span></label><label><input id="enableSwipeGesture" type="checkbox" checked> <span data-i18n="swipeLabel">Two-finger swipe (horizontal sweep or flick)</span></label><label><span data-i18n="sensitivityLabel">Gesture Sensitivity</span><select id="gestureSensitivity"><option value="balanced" selected data-i18n="sensBalanced">Balanced (Standard)</option><option value="high" data-i18n="sensHigh">High Sensitivity (Lighter flick)</option><option value="strict" data-i18n="sensStrict">Strict (Reduced false triggers)</option></select></label></div></div><div class="gesture-diagnostics-card"><div class="diag-header-row"><h4>🎥 15s Gesture Diagnostic &amp; Calibration Video</h4></div><p>Record a 15-second test clip while gesturing in front of your camera. Flippy analyzes hand tracking frame-by-frame and produces an instant diagnostic report with downloadable video.</p><div class="diag-action-row"><button id="startGestureTestBtn" type="button" class="secondary" disabled><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg><span id="gestureTestLabel">Record 15s Gesture Test</span></button><span id="gestureTestTimer" class="diag-timer" hidden>15s remaining</span></div><div id="gestureTestResults" class="diag-results" hidden><div class="diag-stats"><div><strong id="statFrames">0</strong><span>Frames</span></div><div><strong id="statHandSeen">0%</strong><span>Hand tracked</span></div><div><strong id="statPeakVelocity">0.00</strong><span>Peak flick</span></div><div><strong id="statTriggers">0</strong><span>Triggers fired</span></div></div><div id="gestureTestFeedback" class="diag-feedback"></div><div class="diag-links"><a id="downloadDiagVideo" class="diag-dl" download="flippy-gesture-test.webm" hidden>⬇ Download Video (.webm)</a><a id="downloadDiagTelemetry" class="diag-dl" download="flippy-gesture-telemetry.json" hidden>⬇ Download Tracking Data (.json)</a></div></div></div></div></details>
+<details id="accessibilityPanel" class="accessibility glass"><summary data-i18n="settingsSummary">Camera, sound &amp; accessibility</summary><div class="settings-grid"><label><span data-i18n="langSelectLabel">Language / Idioma</span><select id="langSelect"><option value="en">🇺🇸 English</option><option value="es">🇪🇸 Español</option><option value="pt">🇧🇷 Português</option><option value="tr">🇹🇷 Türkçe</option><option value="fr">🇫🇷 Français</option><option value="de">🇩🇪 Deutsch</option></select></label><label><span data-i18n="appearanceLabel">Camera Look</span><select id="appearanceSelect"><option value="natural" data-i18n="appearanceNatural">Natural · Original camera</option><option value="soft-light" data-i18n="appearanceSoftLight">Soft Light · Balanced exposure</option><option value="radiance" data-i18n="appearanceRadiance">Radiance · Gentle smoothing &amp; blush</option></select></label><label><span data-i18n="cameraSelectLabel">Camera</span><select id="cameraSelect"><option value="" data-i18n="defaultCamera">Default camera</option></select></label><label><input id="lowLight" type="checkbox"> <span data-i18n="dimRoomLabel">I’m in a dim room</span></label><label><input id="gesturesEnabled" type="checkbox" checked> <span data-i18n="gesturesEnabledLabel">Hand gestures enabled</span></label><label><input id="reduceMotion" type="checkbox"> <span data-i18n="reduceMotionLabel">Reduce reaction motion</span></label><button id="retryButton" class="secondary" data-i18n="restartCameraBtn">Restart camera &amp; mic</button><button id="welcomeTourBtn" class="secondary" type="button" data-i18n="btnTour">Show welcome tour</button><p data-i18n="cameraRequirementText">Buttons work without gestures. A black or unusable camera pauses matching after two minutes. Improve lighting or restart your camera, then resume.</p><div class="advanced-section"><h4 data-i18n="advancedHeading">⚡ Advanced Features · Gesture Customization</h4><div class="settings-grid"><label><input id="enableScissorGesture" type="checkbox" checked> <span data-i18n="scissorLabel">Scissor Snip (✂️ open/close fingers twice to skip)</span></label><label><input id="enableSwipeGesture" type="checkbox" checked> <span data-i18n="swipeLabel">Two-finger swipe (horizontal sweep or flick)</span></label><label><span data-i18n="sensitivityLabel">Gesture Sensitivity</span><select id="gestureSensitivity"><option value="balanced" selected data-i18n="sensBalanced">Balanced (Standard)</option><option value="high" data-i18n="sensHigh">High Sensitivity (Lighter flick)</option><option value="strict" data-i18n="sensStrict">Strict (Reduced false triggers)</option></select></label></div></div><div class="gesture-diagnostics-card"><div class="diag-header-row"><h4>🎥 15s Gesture Diagnostic &amp; Calibration Video</h4></div><p>Record a 15-second test clip while gesturing in front of your camera. Flippy analyzes hand tracking frame-by-frame and produces an instant diagnostic report with downloadable video.</p><div class="diag-action-row"><button id="startGestureTestBtn" type="button" class="secondary" disabled><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg><span id="gestureTestLabel">Record 15s Gesture Test</span></button><span id="gestureTestTimer" class="diag-timer" hidden>15s remaining</span></div><div id="gestureTestResults" class="diag-results" hidden><div class="diag-stats"><div><strong id="statFrames">0</strong><span>Frames</span></div><div><strong id="statHandSeen">0%</strong><span>Hand tracked</span></div><div><strong id="statPeakVelocity">0.00</strong><span>Peak flick</span></div><div><strong id="statTriggers">0</strong><span>Triggers fired</span></div></div><div id="gestureTestFeedback" class="diag-feedback"></div><div class="diag-links"><a id="downloadDiagVideo" class="diag-dl" download="flippy-gesture-test.webm" hidden>⬇ Download Video (.webm)</a><a id="downloadDiagTelemetry" class="diag-dl" download="flippy-gesture-telemetry.json" hidden>⬇ Download Tracking Data (.json)</a></div></div></div></div></details>
 <details id="labTools" class="accessibility glass" hidden><summary>Test session diagnostics · no video saved</summary><div class="settings-grid"><span id="gestureMeter">Waiting for hand tracking</span><span id="inferenceMetric">Inference p95: — ms</span><button id="exportReport" class="secondary">Export session report</button><p>Detected gestures, sent commands and received reactions are separate events. This report measures this session; it does not certify accuracy across people or devices.</p></div></details>
 
 <section id="about" class="seo-section glass" aria-label="About Flippy random chat">
@@ -321,4 +321,131 @@
 <span data-i18n="footerBeKind">Be kind. Stay present. © 2026 Flippy</span>
 </div>
 </footer>
-</main></div></body></html>
+</main></div>
+
+<div id="onboardingModal" class="onboard-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="onboardStepTitle" hidden>
+  <div class="onboard-modal-card glass">
+    <div class="onboard-header">
+      <div class="onboard-brand">
+        <span class="brand-symbol"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-8 8H5l-3 2v-10a9 9 0 0 1 18 0Z"/><path d="M7 11h.01M11 11h.01M15 11h.01"/></svg></span>
+        <span>flippy<span class="brand-dot">.</span></span>
+      </div>
+      <div class="onboard-steps-indicator" aria-label="Onboarding steps">
+        <span class="onboard-dot active" data-step="1"></span>
+        <span class="onboard-dot" data-step="2"></span>
+        <span class="onboard-dot" data-step="3"></span>
+        <span class="onboard-dot" data-step="4"></span>
+      </div>
+      <button id="onboardCloseBtn" class="onboard-close-btn" aria-label="Skip onboarding">&times;</button>
+    </div>
+
+    <div class="onboard-body">
+      <!-- Step 1: Language selection -->
+      <section class="onboard-step-panel active" id="onboardStep1" data-step="1">
+        <div class="onboard-icon-badge">🌐</div>
+        <h2 id="onboardStepTitle" data-i18n="onboardStep1Title">Choose your language</h2>
+        <p class="onboard-desc" data-i18n="onboardStep1Desc">Select your preferred language. You can change this anytime in Settings.</p>
+        <div class="onboard-lang-grid">
+          <button type="button" class="onboard-lang-btn selected" data-lang="en">🇺🇸 English</button>
+          <button type="button" class="onboard-lang-btn" data-lang="es">🇪🇸 Español</button>
+          <button type="button" class="onboard-lang-btn" data-lang="pt">🇧🇷 Português</button>
+          <button type="button" class="onboard-lang-btn" data-lang="tr">🇹🇷 Türkçe</button>
+          <button type="button" class="onboard-lang-btn" data-lang="fr">🇫🇷 Français</button>
+          <button type="button" class="onboard-lang-btn" data-lang="de">🇩🇪 Deutsch</button>
+        </div>
+        <div class="onboard-actions">
+          <button type="button" class="primary onboard-btn-next" data-next="2" data-i18n="onboardBtnNext">Continue →</button>
+        </div>
+      </section>
+
+      <!-- Step 2: Respect Pledge -->
+      <section class="onboard-step-panel" id="onboardStep2" data-step="2">
+        <div class="onboard-icon-badge">🤝</div>
+        <h2 data-i18n="onboardStep2Title">Respectful by Design</h2>
+        <p class="onboard-tagline" data-i18n="onboardStep2Desc">Meet freely. Stay in control.</p>
+        <div class="onboard-pledge-list">
+          <div class="pledge-item">
+            <span class="pledge-icon">✨</span>
+            <p data-i18n="onboardStep2Pledge1">Respectful Conversations: Harassment, explicit nudity, and unwanted behavior are never tolerated.</p>
+          </div>
+          <div class="pledge-item">
+            <span class="pledge-icon">🛡️</span>
+            <p data-i18n="onboardStep2Pledge2">Immediate Control: Use 1-tap Block or gesture skip anytime to leave and exclude unwanted peers.</p>
+          </div>
+          <div class="pledge-item">
+            <span class="pledge-icon">🔒</span>
+            <p data-i18n="onboardStep2Pledge3">Privacy &amp; Safety: Encrypted peer-to-peer video. Never share sensitive personal information.</p>
+          </div>
+          <div class="pledge-item">
+            <span class="pledge-icon">🔞</span>
+            <p data-i18n="onboardStep2Pledge4">I confirm that I am 18 years or older and agree to the Terms of Service and Community Guidelines.</p>
+          </div>
+        </div>
+        <div class="onboard-actions">
+          <button type="button" class="primary onboard-btn-next" data-next="3" data-i18n="onboardBtnAgree">I Agree &amp; Continue →</button>
+        </div>
+      </section>
+
+      <!-- Step 3: Appearance Selection -->
+      <section class="onboard-step-panel" id="onboardStep3" data-step="3">
+        <div class="onboard-icon-badge">✨</div>
+        <h2 data-i18n="onboardStep3Title">Your camera. Your look.</h2>
+        <p class="onboard-desc" data-i18n="onboardStep3Desc">Appearance adjustments are always optional and available to everyone.</p>
+        <div class="appearance-preset-cards">
+          <button type="button" class="preset-card selected" data-preset="natural">
+            <div class="preset-badge">Default</div>
+            <h4>Natural</h4>
+            <p>Original camera view with zero processing.</p>
+          </button>
+          <button type="button" class="preset-card" data-preset="soft-light">
+            <div class="preset-badge">Soft</div>
+            <h4>Soft Light</h4>
+            <p>Balanced exposure and gentle warmth.</p>
+          </button>
+          <button type="button" class="preset-card" data-preset="radiance">
+            <div class="preset-badge">Glow</div>
+            <h4>Radiance</h4>
+            <p>Gentle skin smoothing and subtle blush tone.</p>
+          </button>
+        </div>
+        <div class="onboard-actions">
+          <button type="button" class="primary onboard-btn-next" data-next="4" data-i18n="onboardBtnNext">Continue →</button>
+        </div>
+      </section>
+
+      <!-- Step 4: Gestures & Start -->
+      <section class="onboard-step-panel" id="onboardStep4" data-step="4">
+        <div class="onboard-icon-badge">🚀</div>
+        <h2 data-i18n="onboardStep4Title">You’re ready to connect!</h2>
+        <p class="onboard-desc" data-i18n="onboardStep4Desc">Start your conversation with natural hands-free gesture controls.</p>
+        <div class="onboard-gesture-hints">
+          <div class="gesture-hint-card">
+            <span class="gesture-hint-icon">✂️</span>
+            <div>
+              <strong>Skip to Next</strong>
+              <p data-i18n="onboardStep4Gesture1">Snip (✂️) or Swipe to skip to the next person.</p>
+            </div>
+          </div>
+          <div class="gesture-hint-card">
+            <span class="gesture-hint-icon">🫶</span>
+            <div>
+              <strong>Send Reactions</strong>
+              <p data-i18n="onboardStep4Gesture2">Two-hand Heart (🫶) sends floating love balloons.</p>
+            </div>
+          </div>
+          <div class="gesture-hint-card">
+            <span class="gesture-hint-icon">🛡️</span>
+            <div>
+              <strong>Instant Shield</strong>
+              <p data-i18n="onboardStep4Gesture3">1-tap Block immediately shields your screen and prevents rematching.</p>
+            </div>
+          </div>
+        </div>
+        <div class="onboard-actions">
+          <button type="button" id="onboardStartBtn" class="primary onboard-btn-start" data-i18n="onboardBtnStart">Start Chatting ↗</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+</body></html>

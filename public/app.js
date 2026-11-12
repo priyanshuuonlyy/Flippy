@@ -115,6 +115,7 @@ function setState(next) {
   elements.nextButton.disabled = !eligible || !wantsChat;
   elements.stopButton.disabled = !stream && !mediaPending;
   elements.heartButton.disabled = state !== 'chatting';
+  if (elements.blockButton) elements.blockButton.hidden = state !== 'chatting';
   if (elements.micToggleBtn) elements.micToggleBtn.disabled = !stream || mediaPending;
   if (elements.startGestureTestBtn) elements.startGestureTestBtn.disabled = !stream;
   elements.emptyState.hidden = state === 'chatting';
@@ -417,6 +418,21 @@ function react(kind = 'heart') {
     record('command', { action: kind });
     send({ type: 'reaction', kind, room });
   }
+}
+function blockPeer() {
+  if (state !== 'chatting' || !room) return;
+  record('command', { action: 'block' });
+  elements.remoteVideo.pause();
+  elements.remoteVideo.srcObject = null;
+  elements.remoteVideo.muted = true;
+  if (elements.remoteCard) {
+    elements.remoteCard.classList.add('shielded');
+    setTimeout(() => elements.remoteCard.classList.remove('shielded'), 600);
+  }
+  send({ type: 'block', room });
+  closePeer();
+  setState('searching');
+  notice(t('noticeBlocked', 'Connection ended and blocked. Finding someone new…'));
 }
 
 function optimizeSdpAudio(sdp) {
@@ -837,7 +853,125 @@ window.addEventListener('flippy:languagechange', () => {
   if (currentNoticeKey) {
     notice(currentNoticeKey, currentNoticeWarning);
   }
+  const cur = getLanguage();
+  document.querySelectorAll('.onboard-lang-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.lang === cur);
+  });
 });
+
+let currentAppearancePreset = 'natural';
+try {
+  const savedPreset = localStorage.getItem('flippy_appearance_preset');
+  if (['natural', 'soft-light', 'radiance'].includes(savedPreset)) {
+    currentAppearancePreset = savedPreset;
+  }
+} catch {}
+
+function setAppearancePreset(preset) {
+  const valid = ['natural', 'soft-light', 'radiance'];
+  if (!valid.includes(preset)) preset = 'natural';
+  currentAppearancePreset = preset;
+  try { localStorage.setItem('flippy_appearance_preset', preset); } catch {}
+  if (elements.localVideo) {
+    elements.localVideo.classList.remove('appearance-natural', 'appearance-soft-light', 'appearance-radiance');
+    elements.localVideo.classList.add(`appearance-${preset}`);
+  }
+  if (elements.appearanceSelect && elements.appearanceSelect.value !== preset) {
+    elements.appearanceSelect.value = preset;
+  }
+  document.querySelectorAll('.preset-card').forEach(card => {
+    card.classList.toggle('selected', card.dataset.preset === preset);
+  });
+}
+
+function cycleAppearancePreset() {
+  const presets = ['natural', 'soft-light', 'radiance'];
+  const nextIndex = (presets.indexOf(currentAppearancePreset) + 1) % presets.length;
+  const nextPreset = presets[nextIndex];
+  setAppearancePreset(nextPreset);
+  const presetLabels = {
+    'natural': t('appearanceNatural', 'Natural'),
+    'soft-light': t('appearanceSoftLight', 'Soft Light'),
+    'radiance': t('appearanceRadiance', 'Radiance')
+  };
+  notice(`${t('appearanceLabel', 'Camera Look')}: ${presetLabels[nextPreset] || nextPreset}`);
+}
+
+function showOnboarding(step = 1) {
+  if (!elements.onboardingModal) return;
+  elements.onboardingModal.hidden = false;
+  setOnboardingStep(step);
+}
+
+function closeOnboarding() {
+  if (!elements.onboardingModal) return;
+  elements.onboardingModal.hidden = true;
+  try { localStorage.setItem('flippy_onboarded_v2', 'true'); } catch {}
+}
+
+function setOnboardingStep(step) {
+  const num = Number(step) || 1;
+  document.querySelectorAll('.onboard-step-panel').forEach(panel => {
+    panel.classList.toggle('active', Number(panel.dataset.step) === num);
+  });
+  document.querySelectorAll('.onboard-dot').forEach(dot => {
+    dot.classList.toggle('active', Number(dot.dataset.step) === num);
+  });
+}
+
+if (elements.blockButton) elements.blockButton.onclick = blockPeer;
+
+if (elements.appearanceSelect) {
+  elements.appearanceSelect.value = currentAppearancePreset;
+  elements.appearanceSelect.onchange = e => setAppearancePreset(e.target.value);
+}
+if (elements.appearanceToggleBtn) {
+  elements.appearanceToggleBtn.onclick = event => {
+    event.stopPropagation();
+    cycleAppearancePreset();
+  };
+}
+if (elements.welcomeTourBtn) {
+  elements.welcomeTourBtn.onclick = () => showOnboarding(1);
+}
+
+if (elements.onboardCloseBtn) elements.onboardCloseBtn.onclick = closeOnboarding;
+if (elements.onboardStartBtn) elements.onboardStartBtn.onclick = () => {
+  closeOnboarding();
+  if (!stream) enableCamera();
+};
+
+document.querySelectorAll('.onboard-btn-next').forEach(btn => {
+  btn.onclick = () => {
+    const nextStep = btn.dataset.next;
+    if (nextStep) setOnboardingStep(nextStep);
+  };
+});
+
+document.querySelectorAll('.onboard-lang-btn').forEach(btn => {
+  btn.onclick = () => {
+    const lang = btn.dataset.lang;
+    if (lang) {
+      setLanguage(lang);
+      document.querySelectorAll('.onboard-lang-btn').forEach(b => b.classList.toggle('selected', b === btn));
+    }
+  };
+});
+
+document.querySelectorAll('.preset-card').forEach(card => {
+  card.onclick = () => {
+    const preset = card.dataset.preset;
+    if (preset) setAppearancePreset(preset);
+  };
+});
+
+setAppearancePreset(currentAppearancePreset);
+
+try {
+  if (!localStorage.getItem('flippy_onboarded_v2')) {
+    showOnboarding(1);
+  }
+} catch {}
 document.querySelectorAll('nav a[href^="#"]').forEach(link => link.addEventListener('click', () => {
   document.querySelectorAll('nav a').forEach(item => { item.classList.remove('nav-active'); item.removeAttribute('aria-current'); });
   link.classList.add('nav-active'); link.setAttribute('aria-current', 'location');

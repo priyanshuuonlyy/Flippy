@@ -48,6 +48,38 @@ test('skip removes old room, cooldown blocks spam, and avoids immediate re-pair'
   setup.maker.receive(setup.first, { type: 'skip' });
   assert.equal(setup.messages.get('first').at(-1).code, 'skip-rate-limit');
 });
+
+test('block disconnects pair, queues caller, and permanently prevents re-matching', () => {
+  const setup = fixture();
+  for (const client of [setup.first, setup.second]) setup.maker.receive(client, { type: 'join' });
+  assert.equal(setup.first.partner, 'second');
+  assert.equal(setup.second.partner, 'first');
+
+  setup.maker.receive(setup.first, { type: 'block' });
+  assert.equal(setup.first.partner, null);
+  assert.equal(setup.second.partner, null);
+  assert.ok(setup.first.blocked.has('second'));
+  assert.ok(setup.second.blocked.has('first'));
+  assert.equal(setup.first.queued, true);
+
+  setup.maker.receive(setup.second, { type: 'join' });
+  assert.equal(setup.first.partner, null);
+  assert.equal(setup.second.partner, null);
+
+  const third = setup.attach('third');
+  setup.heartbeat(third);
+  setup.time(6000);
+  setup.heartbeat(setup.first);
+  setup.heartbeat(setup.second);
+  setup.heartbeat(third);
+  setup.maker.receive(setup.first, { type: 'join' });
+  setup.maker.receive(setup.second, { type: 'join' });
+  setup.maker.receive(third, { type: 'join' });
+
+  assert.equal(setup.first.partner, 'third');
+  assert.equal(third.partner, 'first');
+  assert.equal(setup.second.partner, null);
+});
 test('reconnect keeps camera violation timer but requires fresh healthy dwell', () => {
   const setup = fixture(); setup.heartbeat(setup.first, { ...good(10), mean: 0, variance: 0 });
   const gate = setup.first.gate; const badSince = gate.badSince;

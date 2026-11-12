@@ -20,7 +20,8 @@ export class Matchmaker {
     gate.eligible = false; gate.goodSince = null; gate.lastHeartbeat = -Infinity; gate.lastFrames = null;
     const client = { id, send, gate, kind, room: null, partner: null, previous: null, avoidUntil: 0, queued: false,
       challenge: null, previousChallenge: null, lastChallenge: -Infinity, lastSeq: -1,
-      messages: new Bucket(80, 50, this.now()), reactions: new Bucket(2, 2500, this.now()), skips: new Bucket(1, 1600, this.now()), signals: new Bucket(80, 100, this.now()) };
+      messages: new Bucket(80, 50, this.now()), reactions: new Bucket(2, 2500, this.now()), skips: new Bucket(1, 1600, this.now()), signals: new Bucket(80, 100, this.now()),
+      blocked: new Set() };
     this.clients.set(id, client); this.challenge(client); return client;
   }
   challenge(client) {
@@ -58,6 +59,21 @@ export class Matchmaker {
     if (message.type === 'skip') {
       if (!client.skips.take(now)) return this.error(client, 'skip-rate-limit');
       this.leave(client, 'Next chat');
+      if (client.gate.state !== 'ready') return this.error(client, 'camera-recovering');
+      client.queued = true; this.queue.add(client.id); client.send({ type: 'queued' }); this.match(); return;
+    }
+    if (message.type === 'block') {
+      const partnerId = client.partner;
+      const partner = partnerId ? this.clients.get(partnerId) : null;
+      if (partnerId) {
+        if (!client.blocked) client.blocked = new Set();
+        client.blocked.add(partnerId);
+        if (partner) {
+          if (!partner.blocked) partner.blocked = new Set();
+          partner.blocked.add(client.id);
+        }
+      }
+      this.leave(client, 'Blocked');
       if (client.gate.state !== 'ready') return this.error(client, 'camera-recovering');
       client.queued = true; this.queue.add(client.id); client.send({ type: 'queued' }); this.match(); return;
     }
@@ -101,7 +117,13 @@ export class Matchmaker {
     const waiting = [...this.queue].map(id => this.clients.get(id)).filter(client => client && client.gate.check(now) && client.gate.state === 'ready');
     while (waiting.length > 1) {
       const first = waiting.shift();
-      const choices = waiting.map((other, index) => ({ other, index })).filter(({ other }) => !(first.kind === 'bot' && other.kind === 'bot') && !(first.previous === other.id && now < first.avoidUntil) && !(other.previous === first.id && now < other.avoidUntil));
+      const choices = waiting.map((other, index) => ({ other, index })).filter(({ other }) =>
+        !(first.kind === 'bot' && other.kind === 'bot') &&
+        !(first.previous === other.id && now < first.avoidUntil) &&
+        !(other.previous === first.id && now < other.avoidUntil) &&
+        !(first.blocked && first.blocked.has(other.id)) &&
+        !(other.blocked && other.blocked.has(first.id))
+      );
       let selectedIndex = -1;
       if (choices.length) {
         selectedIndex = choices[randomInt(choices.length)].index;
