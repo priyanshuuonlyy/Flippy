@@ -7,6 +7,9 @@ import { GestureFeedbackRenderer } from './gesture-feedback.js';
 import { record, inference, report, downloadReport } from './diagnostics.js';
 import { acquireConversationStream, hasMicrophone } from './media.js';
 import { AsyncScope } from '/shared/async-scope.js';
+import { initI18n, t, setLanguage, getLanguage, TRANSLATIONS } from './i18n.js';
+
+initI18n();
 
 const elements = Object.fromEntries([...document.querySelectorAll('[id]')].map(element => [element.id, element]));
 const sampler = new CameraSampler(elements.localVideo);
@@ -84,6 +87,10 @@ let disposed = false;
 let currentSessionId = null;
 const signalingScope = new AsyncScope();
 const labels = { idle: 'Ready when you are', preview: 'Camera preview · not connected', searching: 'Finding someone new…', connecting: 'Connecting your conversation…', chatting: 'You’re connected', paused: 'Matching paused', reconnecting: 'Reconnecting…' };
+const labelKeys = { idle: 'labelIdle', preview: 'labelPreview', searching: 'labelSearching', connecting: 'labelConnecting', chatting: 'labelChatting', paused: 'labelPaused', reconnecting: 'labelReconnecting' };
+function getStatusLabel(s) {
+  return (labelKeys[s] ? t(labelKeys[s]) : '') || labels[s] || s;
+}
 const transitions = {
   idle: ['preview', 'paused', 'reconnecting'], preview: ['searching', 'paused', 'idle', 'reconnecting'],
   searching: ['connecting', 'paused', 'preview', 'idle', 'reconnecting'], connecting: ['chatting', 'searching', 'paused', 'preview', 'idle', 'reconnecting'],
@@ -94,28 +101,77 @@ function setState(next) {
   if (next !== state && !transitions[state].includes(next)) return;
   state = next; document.body.dataset.state = state;
   record('session', { state });
-  elements.connectionStatus.textContent = labels[state];
+  elements.connectionStatus.textContent = getStatusLabel(state);
   elements.startButton.disabled = mediaPending || (!!stream && (!eligible || (!hasMicrophone(stream) && !userMuted) || wantsChat || socket?.readyState !== WebSocket.OPEN));
-  elements.startButton.textContent = !stream ? 'Enable camera & mic' : wantsChat ? state === 'chatting' ? 'Connected' : 'Finding your connection…' : state === 'paused' ? 'Resume chatting ↗' : 'Start chatting ↗';
+  elements.startButton.textContent = !stream
+    ? t('btnEnableMedia', 'Enable camera & mic')
+    : wantsChat
+    ? state === 'chatting'
+      ? t('btnConnected', 'Connected')
+      : t('btnFinding', 'Finding your connection…')
+    : state === 'paused'
+    ? t('btnResume', 'Resume chatting ↗')
+    : t('btnStart', 'Start chatting ↗');
   elements.nextButton.disabled = !eligible || !wantsChat;
   elements.stopButton.disabled = !stream && !mediaPending;
   elements.heartButton.disabled = state !== 'chatting';
   if (elements.micToggleBtn) elements.micToggleBtn.disabled = !stream || mediaPending;
   if (elements.startGestureTestBtn) elements.startGestureTestBtn.disabled = !stream;
   elements.emptyState.hidden = state === 'chatting';
-  elements.emptyTitle.textContent = state === 'searching' ? 'Finding your next hello…' : state === 'connecting' ? 'Making the connection…' : state === 'paused' ? 'A moment to reconnect.' : 'Ready when you are.';
-  elements.emptyText.textContent = state === 'searching' ? 'Waiting for another camera-ready person. Try a second browser to test.' : state === 'paused' ? 'Check your camera and microphone, then resume when you’re ready.' : 'Turn on your camera and microphone to find your next conversation.';
-  elements.partnerLabel.textContent = state === 'chatting' ? 'YOUR NEW CONNECTION' : 'YOUR NEXT CONNECTION';
+  elements.emptyTitle.textContent = state === 'searching'
+    ? t('emptyTitleSearching', 'Finding your next hello…')
+    : state === 'connecting'
+    ? t('emptyTitleConnecting', 'Making the connection…')
+    : state === 'paused'
+    ? t('emptyTitlePaused', 'A moment to reconnect.')
+    : t('emptyTitle', 'Ready when you are.');
+  elements.emptyText.innerHTML = state === 'searching'
+    ? t('emptyTextSearching', 'Waiting for another camera-ready person. Try a second browser to test.')
+    : state === 'paused'
+    ? t('emptyTextPaused', 'Check your camera and microphone, then resume when you’re ready.')
+    : t('emptyTextDefault', 'Turn on your camera and microphone to find your next conversation.');
+  elements.partnerLabel.textContent = state === 'chatting'
+    ? t('partnerLive', 'YOUR NEW CONNECTION')
+    : t('partnerNext', 'YOUR NEXT CONNECTION');
 }
-function notice(message, warning = false) { elements.notice.textContent = message; elements.notice.classList.toggle('warning', warning); }
+let currentNoticeKey = null;
+let currentNoticeFallback = '';
+let currentNoticeWarning = false;
+function notice(message, warning = false) {
+  let text = message;
+  if (TRANSLATIONS?.en?.[message]) {
+    currentNoticeKey = message;
+    currentNoticeFallback = TRANSLATIONS.en[message];
+    text = t(message);
+  } else {
+    const foundKey = Object.keys(TRANSLATIONS?.en || {}).find(k => TRANSLATIONS.en[k] === message);
+    if (foundKey) {
+      currentNoticeKey = foundKey;
+      currentNoticeFallback = message;
+      text = t(foundKey);
+    } else {
+      currentNoticeKey = null;
+      currentNoticeFallback = message;
+    }
+  }
+  currentNoticeWarning = warning;
+  elements.notice.textContent = text;
+  elements.notice.classList.toggle('warning', warning);
+}
 function microphoneStatus() {
   if (!elements.micBadge) return;
   const microphone = stream?.getAudioTracks()[0];
-  elements.micBadge.textContent = !hasMicrophone(stream) && !userMuted ? 'Mic off' : userMuted ? 'Mic muted' : microphone?.muted ? 'Mic unavailable' : 'Mic on';
+  elements.micBadge.textContent = !hasMicrophone(stream) && !userMuted
+    ? t('micOff', 'Mic off')
+    : userMuted
+    ? t('micMuted', 'Mic muted')
+    : microphone?.muted
+    ? t('micUnavailable', 'Mic unavailable')
+    : t('micOn', 'Mic on');
   if (elements.micToggleBtn) {
     elements.micToggleBtn.classList.toggle('muted', userMuted);
-    elements.micToggleBtn.setAttribute('aria-label', userMuted ? 'Unmute microphone' : 'Mute microphone');
-    if (elements.micToggleLabel) elements.micToggleLabel.textContent = userMuted ? 'Unmute' : 'Mute';
+    elements.micToggleBtn.setAttribute('aria-label', userMuted ? t('btnUnmute', 'Unmute microphone') : t('btnMute', 'Mute microphone'));
+    if (elements.micToggleLabel) elements.micToggleLabel.textContent = userMuted ? t('btnUnmute', 'Unmute') : t('btnMute', 'Mute');
   }
 }
 function send(message) { if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message)); }
@@ -769,6 +825,19 @@ if (elements.settingsToggle && elements.accessibilityPanel) {
 }
 elements.accessibilityPanel.addEventListener('toggle', () => elements.settingsToggle.setAttribute('aria-expanded', String(elements.accessibilityPanel.open)));
 elements.settingsLink?.addEventListener('click', () => { elements.accessibilityPanel.open = true; });
+if (elements.langSelect) {
+  elements.langSelect.value = getLanguage();
+  elements.langSelect.onchange = (e) => {
+    setLanguage(e.target.value);
+  };
+}
+window.addEventListener('flippy:languagechange', () => {
+  setState(state);
+  microphoneStatus();
+  if (currentNoticeKey) {
+    notice(currentNoticeKey, currentNoticeWarning);
+  }
+});
 document.querySelectorAll('nav a[href^="#"]').forEach(link => link.addEventListener('click', () => {
   document.querySelectorAll('nav a').forEach(item => { item.classList.remove('nav-active'); item.removeAttribute('aria-current'); });
   link.classList.add('nav-active'); link.setAttribute('aria-current', 'location');
