@@ -99,14 +99,14 @@ body[data-state="chatting"] .remote-card { background: #0d151a; -webkit-backdrop
 .mic-toggle-btn.muted .mic-slash { display: inline; }
 .reaction-container { position: relative; display: flex; }
 .reaction-container .heart-button { width: 100%; }
-.reaction-tray { position: absolute; bottom: calc(100% + 8px); right: 0; z-index: 10; display: flex; gap: 3px; justify-content: center; align-items: center; background: rgb(var(--surface-rgb) / .70); border: 1px solid var(--glass-border, rgb(255 255 255 / .32)); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); border-radius: 16px; padding: 4px 6px; box-shadow: 0 8px 24px rgb(0 0 0 / .14); opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateY(4px); }
+.reaction-tray { position: absolute; bottom: calc(100% + 8px); right: 0; z-index: 10; display: flex; gap: 3px; justify-content: center; align-items: center; background: rgb(var(--surface-rgb) / .70); border: 1px solid var(--glass-border, rgb(255 255 255 / .32)); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(12px) saturate(130%); border-radius: 16px; padding: 4px 6px; box-shadow: 0 8px 24px rgb(0 0 0 / .14); opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateY(4px); }
 .reaction-container:hover .reaction-tray, .reaction-container:focus-within .reaction-tray, body[data-state="chatting"] .reaction-tray { opacity: 1; pointer-events: auto; transform: translateY(0); }
-.reaction-emoji-btn { display: grid; place-items: center; min-width: 40px; min-height: 40px; padding: 9px; border: 1px solid var(--line); border-radius: 13px; background: var(--selected); color: var(--rose); cursor: pointer; transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease; box-shadow: 0 2px 8px rgb(0 0 0 / .06); }
+.reaction-emoji-btn { display: grid; place-items: center; min-width: 44px; min-height: 44px; padding: 10px; border: 1px solid var(--line); border-radius: 13px; background: var(--selected); color: var(--rose); cursor: pointer; transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease; box-shadow: 0 2px 8px rgb(0 0 0 / .06); }
 .reaction-emoji-btn .icon { width: 20px; height: 20px; }
 .reaction-emoji-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .reaction-emoji-btn { transition: none; } }
-.reaction-emoji-btn:hover { transform: scale(1.28); }
-.reaction-emoji-btn:active { transform: scale(0.92); }
+.reaction-emoji-btn:hover { transform: translateY(-2px) scale(1.035); background: var(--control); box-shadow: 0 4px 12px rgb(0 0 0 / .10); }
+.reaction-emoji-btn:active { transform: scale(.96); }
 .notice { font-size: 11px; line-height: 1.6; min-height: 18px; margin-top: 10px; color: var(--secondary-ink); text-align: center; }
 .notice.warning { color: var(--warning); }
 .audio-recovery { width: 100%; margin-top: 10px; }
