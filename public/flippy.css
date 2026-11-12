@@ -202,7 +202,16 @@ footer { display: flex; justify-content: space-between; gap: 12px; font-size: 10
   footer { font-size: 10px; padding: 9px 11px; margin-top: 12px; }
   .lab-page { margin: 12px; padding: 16px; } .lab-grid { grid-template-columns: 1fr; } .lab-wide { grid-column: auto; } .lab-intro h1 { font-size: 27px; } .lab-card { padding: 18px; }
 }
-@media (max-width: 350px) { .brand-symbol { display: none; } h1 { font-size: 17px; } .empty-state h2 { font-size: 21px; } .controls { grid-template-columns: 1.15fr 0.95fr 0.9fr 0.95fr; } }
+@media (max-width: 350px) {
+  .brand-symbol { display: none; }
+  h1 { font-size: 17px; }
+  /* Reserve enough vertical breathing room for the lower-right camera preview. */
+  .empty-state { inset: 34px 10px auto; }
+  .empty-content { padding: 12px 14px; }
+  .empty-state h2 { font-size: 18px; margin-bottom: 7px; line-height: 1.12; }
+  .empty-content > p:not(.stage-eyebrow) { font-size: 10px; line-height: 1.4; }
+  .controls { grid-template-columns: 1.15fr 0.95fr 0.9fr 0.95fr; }
+}
 @media (orientation: landscape) and (max-height: 550px) { .app-shell { padding: 12px 20px; } .chat-grid { height: 390px; } }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .glass, .call-header > div:first-child, .header-actions, footer { background: rgb(var(--surface-rgb)); -webkit-backdrop-filter: none; backdrop-filter: none; } }
 @supports not (backdrop-filter: blur(1px)) { .glass { background: rgb(var(--surface-rgb) / .98); } }
