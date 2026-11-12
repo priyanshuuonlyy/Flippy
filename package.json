@@ -1,0 +1,31 @@
+{
+  "name": "rgc-random-gesture-chats",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "tunnel": "node scripts/tunnel.js",
+    "test": "node --test tests/*.test.js",
+    "test:browser": "node --test tests/browser.e2e.js",
+    "test:all": "node scripts/test-all.js",
+    "demo": "node scripts/demo.js",
+    "bot": "node scripts/bot.js",
+    "lab": "node scripts/lab.js",
+    "share": "node scripts/share-cloudflare.js",
+    "build": "node scripts/setup-model.js",
+    "postinstall": "node scripts/setup-model.js",
+    "setup:model": "node scripts/setup-model.js"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "0.10.32",
+    "three": "^0.187.0",
+    "ws": "8.22.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
+  }
+}

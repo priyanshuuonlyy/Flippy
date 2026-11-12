@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: rgc-random-gesture-chats
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run setup:model
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PUBLIC_ORIGIN
+        value: auto
