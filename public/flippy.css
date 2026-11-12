@@ -187,6 +187,11 @@ footer { display: flex; justify-content: space-between; align-items: center; fle
 }
 :root[data-tone="dark"] { color-scheme: dark; --surface-rgb: 23 31 36; --ink: #e2eaed; --secondary-ink: #b8c7ce; --line: rgb(185 202 211 / .25); --accent: #bed0d5; --accent-ink: #1a3038; --control: rgb(66 82 92 / .65); --selected: rgb(117 138 151 / .18); --rose: #dfb6c2; --warning: #f0c9a5; }
 @media (max-width: 1000px) {
+  /* Keep the primary video-chat controls uncluttered on phones and tablets.
+     About, safety and FAQ remain reachable through the existing footer links. */
+  nav a[href="#about"], nav a[href="#safety"], nav a[href="#faq"] { display: none; }
+}
+@media (max-width: 1000px) {
   .app-shell { padding: 20px 24px; } .privacy-note { display: none; }
   .sidebar { padding: 10px 15px; } .empty-state { inset: 65px 165px 65px 20px; }
   .local-card { width: 135px; height: 174px; right: 16px; }
