@@ -171,4 +171,22 @@ test('rapid jitter cannot trigger scissor skip', () => {
   }
 });
 
+test('high sensitivity allows responsive heart dwell and scissor snip thresholds', () => {
+  const machine = new GestureMachine();
+  const hands = heartHands();
+
+  const balancedMachine = new GestureMachine();
+  for (let t = 0; t <= 400; t += 100) {
+    balancedMachine.update(hands, t, { sensitivity: 'balanced' });
+  }
+  assert.equal(balancedMachine.state, 'heart-dwell');
+
+  let highAction = null;
+  for (let t = 0; t <= 400; t += 100) {
+    const act = machine.update(hands, t, { sensitivity: 'high' });
+    if (act) highAction = act;
+  }
+  assert.equal(highAction, 'heart');
+});
+
 

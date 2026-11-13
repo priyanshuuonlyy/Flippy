@@ -105,6 +105,7 @@ export class GestureFeedbackRenderer {
     this.lastState = 'idle';
     this.heartAnchor = null;
     this.sweep = null;
+    this.scissorCut = null;
     this.running = false;
     this.width = 0;
     this.height = 0;
@@ -192,6 +193,22 @@ export class GestureFeedbackRenderer {
     } catch {}
   }
 
+  triggerScissor(point = null) {
+    try {
+      this.sounds.playSwipe();
+      const now = performance.now();
+      const w = this.width || this.canvas?.width || 320;
+      const h = this.height || this.canvas?.height || 240;
+      const cx = point ? point.x : w / 2;
+      const cy = point ? point.y : h / 2;
+      this.scissorCut = { born: now, duration: 320, x: cx, y: cy };
+      if (!this.running) {
+        this.running = true;
+        requestAnimationFrame(time => this.render(time));
+      }
+    } catch {}
+  }
+
   triggerHeart() {
     try {
       this.sounds.playHeart();
@@ -209,6 +226,7 @@ export class GestureFeedbackRenderer {
       if (this.reduced()) {
         this.trail = [];
         this.sweep = null;
+        this.scissorCut = null;
         ctx.clearRect(0, 0, w, h);
         this.running = false;
         return;
@@ -288,7 +306,41 @@ export class GestureFeedbackRenderer {
         ctx.restore();
       }
 
-      if (this.trail.length > 0 || this.heartAnchor || this.sweep) {
+      // 4. Draw Scissor Snip Cut Flash
+      if (this.scissorCut) {
+        const elapsed = now - this.scissorCut.born;
+        if (elapsed > this.scissorCut.duration) {
+          this.scissorCut = null;
+        } else {
+          const p = elapsed / this.scissorCut.duration;
+          const alpha = (1 - p) * 0.9;
+          const len = 35 + p * 50;
+          ctx.save();
+          ctx.translate(this.scissorCut.x, this.scissorCut.y);
+          ctx.strokeStyle = `rgba(245, 158, 11, ${alpha})`;
+          ctx.shadowColor = '#f59e0b';
+          ctx.shadowBlur = 12;
+          ctx.lineWidth = 3;
+
+          ctx.beginPath();
+          ctx.moveTo(-len * 0.7, -len * 0.5);
+          ctx.lineTo(len * 0.7, len * 0.5);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(-len * 0.7, len * 0.5);
+          ctx.lineTo(len * 0.7, -len * 0.5);
+          ctx.stroke();
+
+          ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+          ctx.beginPath();
+          ctx.arc(0, 0, 3 + (1 - p) * 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      if (this.trail.length > 0 || this.heartAnchor || this.sweep || this.scissorCut) {
         requestAnimationFrame(time => this.render(time));
       } else {
         this.running = false;

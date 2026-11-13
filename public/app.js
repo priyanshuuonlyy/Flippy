@@ -767,14 +767,43 @@ function startWorker() {
       inference({ duration: data.duration, hands: hands.length, state: gestures.state });
       if (action) record('gesture', { action });
       if (elements.gestureMeter) elements.gestureMeter.textContent = `${hands.length} hands · ${Math.round(data.duration || 0)} ms · ${gestures.state}`;
-      if (action === 'skip' && state === 'chatting') {
-        elements.gestureStatus.textContent = 'Skip detected · finding someone new';
-        try { feedback?.triggerSkip(); } catch {}
-        next();
-      } else if (action === 'heart' && state === 'chatting') {
-        elements.gestureStatus.textContent = 'Heart detected';
-        try { feedback?.triggerHeart(); } catch {}
-        react();
+      if (action === 'skip') {
+        if (state === 'chatting') {
+          elements.gestureStatus.textContent = 'Skip detected · finding someone new';
+          try {
+            if (hands.length === 1 && scissorState(hands[0], { sensitivity })) {
+              const tip = hands[0][8];
+              const w = feedback?.width || 320; const h = feedback?.height || 240;
+              feedback?.triggerScissor({ x: (tip.x / (data.width / data.height)) * w, y: tip.y * h });
+            } else {
+              feedback?.triggerSkip();
+            }
+          } catch {}
+          next();
+        } else {
+          elements.gestureStatus.textContent = '✂️ Skip gesture recognized! (Ready to skip)';
+          try {
+            if (hands.length === 1 && scissorState(hands[0], { sensitivity })) {
+              const tip = hands[0][8];
+              const w = feedback?.width || 320; const h = feedback?.height || 240;
+              feedback?.triggerScissor({ x: (tip.x / (data.width / data.height)) * w, y: tip.y * h });
+            } else {
+              feedback?.triggerSkip();
+            }
+          } catch {}
+          Sound.playSkip();
+        }
+      } else if (action === 'heart') {
+        if (state === 'chatting') {
+          elements.gestureStatus.textContent = 'Heart detected';
+          try { feedback?.triggerHeart(); } catch {}
+          react();
+        } else {
+          elements.gestureStatus.textContent = '🫶 Two-hand heart recognized! (Ready to react)';
+          try { feedback?.triggerHeart(); } catch {}
+          hearts.burst({ kind: 'heart' });
+          Sound.playPop();
+        }
       } else if (gestures.state === 'heart-dwell') {
         const holdProgress = Math.min(100, Math.round(((data.time - gestures.since) / 500) * 100));
         elements.gestureStatus.textContent = `Heart held · ${holdProgress}%`;
@@ -785,10 +814,18 @@ function startWorker() {
       } else if (hands.length === 2) {
         elements.gestureStatus.textContent = 'Two hands · join fingertips and thumbs for a heart';
       } else if (hands.length === 1) {
-        if (twoFingersTogether(hands[0])) {
+        const scissor = scissorState(hands[0], { sensitivity });
+        const snips = gestures.snips || 0;
+        if (scissor === 'open') {
+          elements.gestureStatus.textContent = snips === 1
+            ? '✂️ Snip 1/2 detected · close fingers once more to skip'
+            : '✂️ Scissor pose · snip twice (open & close) to skip';
+        } else if (scissor === 'closed' && snips === 1) {
+          elements.gestureStatus.textContent = '✂️ Snip 1/2 detected · open and close once more to skip';
+        } else if (twoFingersTogether(hands[0])) {
           elements.gestureStatus.textContent = 'Two fingers together · swipe sideways to skip';
         } else {
-          elements.gestureStatus.textContent = 'Hand in view · hold index and middle fingers together';
+          elements.gestureStatus.textContent = 'Hand in view · scissor snip (✂️) or two fingers to skip';
         }
       } else if (workerReady) {
         elements.gestureStatus.textContent = '✧ Hand gestures ready';

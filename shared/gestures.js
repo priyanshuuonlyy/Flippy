@@ -26,7 +26,7 @@ export function twoFingersTogether(hand) {
     && distance(hand[8], hand[12]) < scale * .75 && parallel > .80;
 }
 
-export function scissorState(hand) {
+export function scissorState(hand, { sensitivity = 'balanced' } = {}) {
   if (!validHand(hand)) return null;
   const scale = palmSize(hand);
   if (scale < .065 || scale > .65) return null;
@@ -35,8 +35,10 @@ export function scissorState(hand) {
   const thumbOut = distance(hand[4], hand[0]) > distance(hand[2], hand[0]) + scale * .45;
   if (thumbOut) return null;
   const tipGap = distance(hand[8], hand[12]);
-  if (tipGap > scale * .46) return 'open';
-  if (tipGap < scale * .32) return 'closed';
+  const openThreshold = sensitivity === 'high' ? scale * .42 : sensitivity === 'strict' ? scale * .50 : scale * .46;
+  const closedThreshold = sensitivity === 'high' ? scale * .35 : sensitivity === 'strict' ? scale * .28 : scale * .32;
+  if (tipGap > openThreshold) return 'open';
+  if (tipGap < closedThreshold) return 'closed';
   return null;
 }
 
@@ -78,11 +80,13 @@ export class GestureMachine {
     if (heart) {
       if (this.state !== 'heart-dwell') { this.state = 'heart-dwell'; this.since = now; this.samples = 0; }
       this.samples++;
-      if (now - this.since >= 500 && this.samples >= 4) return this.fire('heart', now, 2500);
+      const heartDwell = sensitivity === 'high' ? 380 : sensitivity === 'strict' ? 620 : 500;
+      const minSamples = sensitivity === 'high' ? 3 : 4;
+      if (now - this.since >= heartDwell && this.samples >= minSamples) return this.fire('heart', now, 2500);
       return null;
     }
     if (allowScissor && hands.length === 1) {
-      const scissor = scissorState(hands[0]);
+      const scissor = scissorState(hands[0], { sensitivity });
       const palm = palmCenter(hands[0]);
       const scale = palmSize(hands[0]);
       if (scissor) {
@@ -98,12 +102,14 @@ export class GestureMachine {
           this.scissorSince = now;
         } else if (scissor !== this.lastScissor) {
           const held = now - this.scissorSince;
-          if (held < 70) {
+          const minHeld = sensitivity === 'high' ? 50 : 70;
+          if (held < minHeld) {
             this.snips = 0;
           } else {
             if (this.lastScissor === 'open' && scissor === 'closed') {
               this.snips++;
-              if (held >= 220 || this.snips >= 2) {
+              const triggerHold = sensitivity === 'high' ? 180 : 220;
+              if (held >= triggerHold || this.snips >= 2) {
                 this.snips = 0;
                 this.snipAnchor = null;
                 this.lastScissor = null;

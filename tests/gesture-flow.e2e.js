@@ -14,6 +14,7 @@ test('scripted landmarks pass through filtering into one synced heart and one ca
     for (let index = 0; index < 2; index++) {
       const context = await browser.newContext({ permissions: ['camera', 'microphone'] });
       await context.addInitScript(() => {
+        try { localStorage.setItem('flippy_onboarded_v2', '1'); } catch {}
         window.testGesture = 'none'; window.gestureStarted = 0;
         const swipe = offset => {
           const hand = Array.from({ length: 21 }, () => ({ x: .5 + offset, y: .7 }));
