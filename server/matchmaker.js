@@ -18,7 +18,7 @@ export class Matchmaker {
       this.detach(this.clients.get(id));
     }
     gate.eligible = false; gate.goodSince = null; gate.lastHeartbeat = -Infinity; gate.lastFrames = null;
-    const client = { id, send, gate, kind, room: null, partner: null, previous: null, avoidUntil: 0, queued: false,
+    const client = { id, send, gate, kind, room: null, partner: null, previous: null, avoidUntil: 0, queued: false, targetRoom: null,
       challenge: null, previousChallenge: null, lastChallenge: -Infinity, lastSeq: -1,
       messages: new Bucket(80, 50, this.now()), reactions: new Bucket(2, 2500, this.now()), skips: new Bucket(1, 1600, this.now()), signals: new Bucket(80, 100, this.now()),
       blocked: new Set() };
@@ -54,15 +54,18 @@ export class Matchmaker {
     if (message.type === 'join') {
       if (client.partner || client.queued) return;
       if (client.gate.state !== 'ready') return this.error(client, 'camera-recovering');
+      client.targetRoom = typeof message.targetRoom === 'string' && /^[a-zA-Z0-9_-]{3,32}$/.test(message.targetRoom) ? message.targetRoom : null;
       client.queued = true; this.queue.add(client.id); client.send({ type: 'queued' }); this.match(); return;
     }
     if (message.type === 'skip') {
       if (!client.skips.take(now)) return this.error(client, 'skip-rate-limit');
+      client.targetRoom = null;
       this.leave(client, 'Next chat');
       if (client.gate.state !== 'ready') return this.error(client, 'camera-recovering');
       client.queued = true; this.queue.add(client.id); client.send({ type: 'queued' }); this.match(); return;
     }
     if (message.type === 'block') {
+      client.targetRoom = null;
       const partnerId = client.partner;
       const partner = partnerId ? this.clients.get(partnerId) : null;
       if (partnerId) {
@@ -122,7 +125,8 @@ export class Matchmaker {
         !(first.previous === other.id && now < first.avoidUntil) &&
         !(other.previous === first.id && now < other.avoidUntil) &&
         !(first.blocked && first.blocked.has(other.id)) &&
-        !(other.blocked && other.blocked.has(first.id))
+        !(other.blocked && other.blocked.has(first.id)) &&
+        (first.targetRoom ? other.targetRoom === first.targetRoom : !other.targetRoom)
       );
       let selectedIndex = -1;
       if (choices.length) {
@@ -131,6 +135,8 @@ export class Matchmaker {
         continue;
       }
       const second = waiting.splice(selectedIndex, 1)[0];
+      first.targetRoom = null;
+      second.targetRoom = null;
       const room = randomUUID();
       console.log(`[Matchmaker] 🚀 MATCHED: ${first.id.slice(0, 8)} <--> ${second.id.slice(0, 8)} in room ${room.slice(0, 8)}`);
       for (const [client, partner, initiator] of [[first, second, true], [second, first, false]]) {

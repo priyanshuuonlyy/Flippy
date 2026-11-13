@@ -8,6 +8,8 @@ import { record, inference, report, downloadReport } from './diagnostics.js';
 import { acquireConversationStream, hasMicrophone } from './media.js';
 import { AsyncScope } from '/shared/async-scope.js';
 import { initI18n, t, setLanguage, getLanguage, TRANSLATIONS } from './i18n.js';
+import { Sound } from './sound.js';
+import { getIcebreaker, rollNextIcebreaker } from './icebreaker.js';
 
 initI18n();
 
@@ -46,6 +48,13 @@ let cameraGeneration = 0;
 let mediaPending = false;
 let lastSkipAt = -Infinity;
 let currentDeviceId = null;
+let targetRoom = null;
+try {
+  const queryRoom = new URLSearchParams(window.location.search).get('room') || new URLSearchParams(window.location.search).get('invite');
+  if (queryRoom && /^[a-zA-Z0-9_-]{3,32}$/.test(queryRoom)) {
+    targetRoom = queryRoom;
+  }
+} catch {}
 let availableCameras = [];
 async function updateCameraList() {
   if (!navigator.mediaDevices?.enumerateDevices) return;
@@ -134,6 +143,14 @@ function setState(next) {
   elements.partnerLabel.textContent = state === 'chatting'
     ? t('partnerLive', 'YOUR NEW CONNECTION')
     : t('partnerNext', 'YOUR NEXT CONNECTION');
+  if (elements.icebreakerCard) {
+    if (state === 'chatting') {
+      elements.icebreakerCard.hidden = false;
+      if (elements.icebreakerText) elements.icebreakerText.textContent = getIcebreaker(getLanguage());
+    } else {
+      elements.icebreakerCard.hidden = true;
+    }
+  }
 }
 let currentNoticeKey = null;
 let currentNoticeFallback = '';
@@ -396,7 +413,7 @@ function join() {
   if (!hasMicrophone(stream)) { notice('Enable your microphone using Restart camera & mic before starting a chat.', true); return; }
   wantsChat = true;
   if (eligible && healthState === 'ready') {
-    send({ type: 'join' });
+    send({ type: 'join', targetRoom: targetRoom || undefined });
     setState('searching');
   } else {
     setState('searching');
@@ -408,6 +425,8 @@ function next() {
   if (!eligible || !wantsChat || now - lastSkipAt < 1600) return;
   lastSkipAt = now;
   record('command', { action: 'skip' });
+  Sound.playSkip();
+  targetRoom = null;
   visuals3d?.warp();
   closePeer();
   send({ type: 'skip' });
@@ -416,12 +435,17 @@ function next() {
 function react(kind = 'heart') {
   if (state === 'chatting' && room) {
     record('command', { action: kind });
+    Sound.playPop();
     send({ type: 'reaction', kind, room });
+    hearts.burst({ kind });
+    visuals3d?.burst({ kind });
   }
 }
 function blockPeer() {
   if (state !== 'chatting' || !room) return;
   record('command', { action: 'block' });
+  Sound.playSkip();
+  targetRoom = null;
   elements.remoteVideo.pause();
   elements.remoteVideo.srcObject = null;
   elements.remoteVideo.muted = true;
@@ -553,7 +577,7 @@ async function matched(message) {
   const updateConnected = () => {
     if (peer !== current) return;
     if (current.connectionState === 'connected' || current.iceConnectionState === 'connected' || current.iceConnectionState === 'completed') {
-      clearTimeout(connectionTimer); clearTimeout(disconnectTimer); setState('chatting'); notice('Say hello! Two fingers + a sideways swipe finds someone new.');
+      clearTimeout(connectionTimer); clearTimeout(disconnectTimer); setState('chatting'); Sound.playMatch(); notice('Say hello! Two fingers + a sideways swipe finds someone new.');
     } else if (current.connectionState === 'failed' || current.iceConnectionState === 'failed') {
       pause('The video connection failed. Resume to try again. Some networks need a configured relay server.');
     } else if (current.connectionState === 'disconnected') {
@@ -681,10 +705,11 @@ async function connect() {
         signalingScope.enqueue(() => message.type === 'matched' ? matched(message) : signaling(message), () => pause('Could not negotiate video. Resume to try a fresh connection.'));
       } else if (message.type === 'ended') {
         closePeer();
-        if (wantsChat && eligible) { setState('searching'); send({ type: 'join' }); }
+        if (wantsChat && eligible) { setState('searching'); send({ type: 'join', targetRoom: targetRoom || undefined }); }
         else if (state !== 'paused') setState(stream ? 'preview' : 'idle');
       } else if (message.type === 'reaction' && message.room === room) {
         record('reaction-received', { kind: message.kind });
+        Sound.playPop();
         hearts.burst(message);
         visuals3d?.burst(message);
       }
@@ -854,10 +879,75 @@ window.addEventListener('flippy:languagechange', () => {
     notice(currentNoticeKey, currentNoticeWarning);
   }
   const cur = getLanguage();
+  if (elements.icebreakerCard && !elements.icebreakerCard.hidden && elements.icebreakerText) {
+    elements.icebreakerText.textContent = getIcebreaker(cur);
+  }
   document.querySelectorAll('.onboard-lang-btn').forEach(b => {
     b.classList.toggle('selected', b.dataset.lang === cur);
   });
 });
+
+if (elements.soundEffects) {
+  elements.soundEffects.checked = Sound.isEnabled();
+  elements.soundEffects.onchange = () => {
+    Sound.setEnabled(elements.soundEffects.checked);
+  };
+}
+
+if (elements.icebreakerNextBtn) {
+  elements.icebreakerNextBtn.onclick = (e) => {
+    e.stopPropagation();
+    if (elements.icebreakerText) {
+      elements.icebreakerText.textContent = rollNextIcebreaker(getLanguage());
+    }
+  };
+}
+
+if (elements.icebreakerCloseBtn) {
+  elements.icebreakerCloseBtn.onclick = (e) => {
+    e.stopPropagation();
+    if (elements.icebreakerCard) {
+      elements.icebreakerCard.hidden = true;
+    }
+  };
+}
+
+if (elements.inviteFriendBtn) {
+  elements.inviteFriendBtn.onclick = async (e) => {
+    e.stopPropagation();
+    if (!targetRoom) {
+      targetRoom = 'room-' + Math.random().toString(36).substring(2, 8);
+    }
+    const inviteUrl = `${window.location.origin}/?room=${encodeURIComponent(targetRoom)}`;
+
+    if (wantsChat && eligible && socket?.readyState === WebSocket.OPEN) {
+      send({ type: 'join', targetRoom });
+    }
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Flippy · Free Random Video Chat',
+          text: 'Hey! Chat with me on Flippy with camera gestures (✂️ snip to skip):',
+          url: inviteUrl
+        });
+        return;
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(inviteUrl);
+      if (elements.inviteCopiedToast) {
+        elements.inviteCopiedToast.hidden = false;
+        setTimeout(() => { if (elements.inviteCopiedToast) elements.inviteCopiedToast.hidden = true; }, 3500);
+      }
+    } catch {
+      window.prompt('Copy invite link:', inviteUrl);
+    }
+  };
+}
 
 let currentAppearancePreset = 'natural';
 try {

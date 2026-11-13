@@ -80,6 +80,32 @@ test('block disconnects pair, queues caller, and permanently prevents re-matchin
   assert.equal(third.partner, 'first');
   assert.equal(setup.second.partner, null);
 });
+test('clients with matching targetRoom pair directly and isolate from general queue', () => {
+  const setup = fixture();
+  const roomA1 = setup.attach('user-a1');
+  const roomA2 = setup.attach('user-a2');
+  const randomUser = setup.attach('random-user');
+
+  setup.heartbeat(roomA1);
+  setup.heartbeat(roomA2);
+  setup.heartbeat(randomUser);
+  setup.time(6000);
+  setup.heartbeat(roomA1);
+  setup.heartbeat(roomA2);
+  setup.heartbeat(randomUser);
+
+  setup.maker.receive(roomA1, { type: 'join', targetRoom: 'study-group-1' });
+  setup.maker.receive(randomUser, { type: 'join' });
+
+  assert.equal(roomA1.partner, null);
+  assert.equal(randomUser.partner, null);
+
+  setup.maker.receive(roomA2, { type: 'join', targetRoom: 'study-group-1' });
+
+  assert.equal(roomA1.partner, 'user-a2');
+  assert.equal(roomA2.partner, 'user-a1');
+  assert.equal(randomUser.partner, null);
+});
 test('reconnect keeps camera violation timer but requires fresh healthy dwell', () => {
   const setup = fixture(); setup.heartbeat(setup.first, { ...good(10), mean: 0, variance: 0 });
   const gate = setup.first.gate; const badSince = gate.badSince;
